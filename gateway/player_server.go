@@ -11,13 +11,31 @@ import (
 	"hapegateway/protocol/worldv1"
 )
 
+// Option customizes the player connection handler.
+type Option func(*handlerConfig)
+
+type handlerConfig struct{ metrics *Metrics }
+
+// WithMetrics attaches a metric set to the handler.
+func WithMetrics(m *Metrics) Option { return func(c *handlerConfig) { c.metrics = m } }
+
 // NewPlayerConnHandler serves a player connection: hello/resume, request
 // responses, and optional state pushes.
-func NewPlayerConnHandler(backend Backend, auth Authenticator) link.ConnHandler {
+func NewPlayerConnHandler(backend Backend, auth Authenticator, opts ...Option) link.ConnHandler {
 	if auth == nil {
 		auth = DevAuthenticator{}
 	}
+	cfg := &handlerConfig{}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+	m := cfg.metrics
 	return func(ctx context.Context, c *link.Conn) {
+		if m != nil {
+			m.ConnectionsTotal.Add(1)
+			m.ConnectionsActive.Add(1)
+			defer m.ConnectionsActive.Add(-1)
+		}
 		id, payload, err := c.Read()
 		if err != nil {
 			return
@@ -29,6 +47,9 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator) link.ConnHandler 
 		}
 		sess, err := auth.Authenticate(hello.Token)
 		if err != nil {
+			if m != nil {
+				m.AuthFailures.Add(1)
+			}
 			_ = replyHello(c, id, &playerv1.HelloAck{Error: "unauthorized"})
 			return
 		}
@@ -63,6 +84,9 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator) link.ConnHandler 
 			if in.Token != "" {
 				s, err := auth.Authenticate(in.Token)
 				if err != nil || s.PlayerID != sess.PlayerID {
+					if m != nil {
+						m.AuthFailures.Add(1)
+					}
 					_ = replyWorld(c, id, &worldv1.Response{Error: "unauthorized"})
 					continue
 				}
@@ -79,12 +103,18 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator) link.ConnHandler 
 				_ = replyWorld(c, id, &worldv1.Response{Error: "player mismatch"})
 				continue
 			}
+			if m != nil {
+				m.CommandsTotal.Add(1)
+			}
 			resp, herr := backend.Handle(ctx, cmd)
 			if herr != nil {
 				resp = &worldv1.Response{Error: herr.Error()}
 			}
 			if resp == nil {
 				resp = &worldv1.Response{}
+			}
+			if m != nil && (herr != nil || !resp.Ok) {
+				m.CommandErrors.Add(1)
 			}
 			if err := replyWorld(c, id, resp); err != nil {
 				return
@@ -98,6 +128,9 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator) link.ConnHandler 
 						ev.State = st
 					}
 					b, err := proto.Marshal(ev)
+					if m != nil {
+						m.PushesTotal.Add(1)
+					}
 					if err != nil || c.Push(b) != nil {
 						return
 					}
