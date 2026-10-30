@@ -4,7 +4,7 @@ package hape.player.v1;
 
 import "proto/world/v1/world.proto";
 
-option go_package = "hapegateway/protocol/playerv1;playerv1";
+option go_package = "github.com/CoderYkj/HapeGateway/protocol/playerv1;playerv1";
 
 // Request is one authenticated player command.
 message Request {

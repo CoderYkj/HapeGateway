@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package hape.world.v1;
 
-option go_package = "hapegateway/protocol/worldv1;worldv1";
+option go_package = "github.com/CoderYkj/HapeGateway/protocol/worldv1;worldv1";
 
 message Command {
   uint64 seq = 1;

@@ -1,4 +1,4 @@
-# HapeGateway
+# HapeGateway\n\nGo module: `github.com/CoderYkj/HapeGateway`
 
 Reusable player TCP gateway for HapeServer.
 
@@ -35,3 +35,23 @@ server replies with `worldv1.Response` and optional `player.v1.Event` pushes.
 ```bash
 go test ./...
 ```
+
+## Metrics
+
+`GET /metrics` on the admin port exposes Prometheus text:
+
+```text
+hapegateway_connections_total
+hapegateway_connections_active
+hapegateway_auth_failures_total
+hapegateway_commands_total
+hapegateway_command_errors_total
+hapegateway_pushes_total
+hapegateway_backend_errors_total
+```
+
+## Graceful shutdown
+
+On SIGINT/SIGTERM the gateway stops accepting, closes active player
+connections, waits up to 5s for handlers, then shuts down the admin HTTP
+server.
