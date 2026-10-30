@@ -7,9 +7,9 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"hapegateway/link"
-	"hapegateway/protocol/playerv1"
-	"hapegateway/protocol/worldv1"
+	"github.com/CoderYkj/HapeGateway/link"
+	"github.com/CoderYkj/HapeGateway/protocol/playerv1"
+	"github.com/CoderYkj/HapeGateway/protocol/worldv1"
 )
 
 type fakeBackend struct{}

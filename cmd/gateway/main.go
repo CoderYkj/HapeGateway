@@ -13,8 +13,8 @@ import (
 	"syscall"
 	"time"
 
-	"hapegateway/gateway"
-	"hapegateway/link"
+	"github.com/CoderYkj/HapeGateway/gateway"
+	"github.com/CoderYkj/HapeGateway/link"
 )
 
 func main() {

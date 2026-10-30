@@ -8,8 +8,8 @@ import (
 
 	"google.golang.org/protobuf/proto"
 
-	"hapegateway/link"
-	"hapegateway/protocol/worldv1"
+	"github.com/CoderYkj/HapeGateway/link"
+	"github.com/CoderYkj/HapeGateway/protocol/worldv1"
 )
 
 // TCPBackend forwards commands over a dynamically sized pool of TCP links.

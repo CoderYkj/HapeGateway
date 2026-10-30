@@ -3,7 +3,7 @@ package gateway
 import (
 	"context"
 
-	"hapegateway/protocol/worldv1"
+	"github.com/CoderYkj/HapeGateway/protocol/worldv1"
 )
 
 // Backend is the world command surface behind the gateway.

@@ -1,4 +1,4 @@
-module hapegateway
+module github.com/CoderYkj/HapeGateway
 
 go 1.27.2
 
