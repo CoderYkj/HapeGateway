@@ -1,12 +1,12 @@
-# HapeGateway\n\nGo module: `github.com/CoderYkj/HapeGateway`
+# HapeGateway
+
+Go module: `github.com/CoderYkj/HapeGateway`
 
 Reusable player TCP gateway for HapeServer.
 
 ## Packages
 
 - `link`: length-prefixed frame protocol, multiplexed world client, player server (`Conn`/`PlayerServer`).
-- `protocol/playerv1`: player wire (`Hello`, `HelloAck`, `Request`, `Event`).
-- `protocol/worldv1`: backend contract (`Command`, typed `Response`, `StateDelta`).
 - `gateway`: authenticator, backend interface, player connection handler, pooled TCP backend.
 - `cmd/gateway`: runnable gateway.
 
@@ -20,6 +20,8 @@ type Backend interface {
 ```
 
 `gateway.TCPBackend` implements it over a pooled TCP link to a world process.
+
+The wire contracts come from `github.com/CoderYkj/HapeProto` (`playerv1`, `worldv1`).
 
 ## Run
 

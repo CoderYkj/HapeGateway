@@ -9,7 +9,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"github.com/CoderYkj/HapeGateway/link"
-	"github.com/CoderYkj/HapeGateway/protocol/worldv1"
+	"github.com/CoderYkj/HapeProto/worldv1"
 )
 
 // TCPBackend forwards commands over a dynamically sized pool of TCP links.
