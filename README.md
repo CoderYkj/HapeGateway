@@ -21,7 +21,9 @@ type Backend interface {
 
 `gateway.TCPBackend` implements it over a pooled TCP link to a world process.
 
-The wire contracts come from `github.com/CoderYkj/HapeProto` (`playerv1`, `worldv1`).
+The wire contracts come from `github.com/CoderYkj/HapeProto` (`playerv1`, `worldv1`)
+
+Local development uses a gitignored `go.work`; CI consumes the tagged module from GOPROXY.
 
 ## Run
 
