@@ -69,6 +69,12 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator, opts ...Option) l
 		if err := replyHello(c, id, ack); err != nil {
 			return
 		}
+		if hello.Subscribe {
+			_, _ = backend.Handle(ctx, &worldv1.Command{PlayerId: sess.PlayerID, Action: "track_history", K: 1})
+			defer func() {
+				_, _ = backend.Handle(context.Background(), &worldv1.Command{PlayerId: sess.PlayerID, Action: "track_history", K: 0})
+			}()
+		}
 		lastVersion := version
 
 		for {
