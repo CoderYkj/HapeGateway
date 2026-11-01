@@ -59,3 +59,13 @@ hapegateway_backend_errors_total
 On SIGINT/SIGTERM the gateway stops accepting, closes active player
 connections, waits up to 5s for handlers, then shuts down the admin HTTP
 server.
+## P1: auth and multi-world routing
+
+- `-auth-secret <secret>` enables HMAC player tokens.
+- `-world-map "1=127.0.0.1:9000,2=127.0.0.1:9100"` routes sessions by token world ID.
+- `-world-tcp` is the fallback backend for unmapped worlds.
+- Issue a token:
+  ```bash
+  go run ./cmd/token -secret <secret> -world 2 -player 42 -ttl 1h
+  ```
+- Token format: `v1:<world>:<player>:<expUnix>:<base64url(hmac-sha256)>`.
