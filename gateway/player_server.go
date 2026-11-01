@@ -22,6 +22,15 @@ func WithMetrics(m *Metrics) Option { return func(c *handlerConfig) { c.metrics 
 // NewPlayerConnHandler serves a player connection: hello/resume, request
 // responses, and optional state pushes.
 func NewPlayerConnHandler(backend Backend, auth Authenticator, opts ...Option) link.ConnHandler {
+	return newPlayerConnHandler(StaticRouter{B: backend}, auth, opts...)
+}
+
+// NewRoutedPlayerConnHandler routes each session by its world ID.
+func NewRoutedPlayerConnHandler(router Router, auth Authenticator, opts ...Option) link.ConnHandler {
+	return newPlayerConnHandler(router, auth, opts...)
+}
+
+func newPlayerConnHandler(router Router, auth Authenticator, opts ...Option) link.ConnHandler {
 	if auth == nil {
 		auth = DevAuthenticator{}
 	}
@@ -51,6 +60,11 @@ func NewPlayerConnHandler(backend Backend, auth Authenticator, opts ...Option) l
 				m.AuthFailures.Add(1)
 			}
 			_ = replyHello(c, id, &playerv1.HelloAck{Error: "unauthorized"})
+			return
+		}
+		backend, berr := router.Backend(sess.WorldID)
+		if berr != nil || backend == nil {
+			_ = replyHello(c, id, &playerv1.HelloAck{Error: "no world backend"})
 			return
 		}
 		st, ok := backend.State(ctx, sess.PlayerID)
